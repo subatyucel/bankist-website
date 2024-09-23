@@ -12,6 +12,9 @@ const tabs = document.querySelectorAll('.operations__tab');
 const tabsContainer = document.querySelector('.operations__tab-container');
 const tabsContent = document.querySelectorAll('.operations__content');
 const nav = document.querySelector('.nav');
+const navHeight = nav.getBoundingClientRect().height;
+const header = document.querySelector('.header');
+const allSections = document.querySelectorAll('.section');
 
 ///////////////////////////////////////
 // Modal window
@@ -100,3 +103,40 @@ function handleHover(e) {
 //Passing 'arguments' into handler
 nav.addEventListener('mouseover', handleHover.bind(0.5));
 nav.addEventListener('mouseout', handleHover.bind(1));
+
+//////////////////////////////////////////////////////////
+// Sticky navigation
+function stickyNav(entries) {
+  const [entry] = entries;
+
+  if (!entry.isIntersecting) nav.classList.add('sticky');
+  else nav.classList.remove('sticky');
+}
+
+const headerObserver = new IntersectionObserver(stickyNav, {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${navHeight}px`,
+});
+
+headerObserver.observe(header);
+
+//////////////////////////////////////////////////////////
+// Reveal sections with animation
+function revelSections(entries, observer) {
+  const [entry] = entries;
+
+  if (entry.isIntersecting) entry.target.classList.remove('section--hidden');
+
+  sectionObserver.unobserve(entry.target);
+}
+
+const sectionObserver = new IntersectionObserver(revelSections, {
+  root: null,
+  threshold: 0.2,
+});
+
+allSections.forEach(section => {
+  sectionObserver.observe(section);
+  section.classList.add('section--hidden');
+});
